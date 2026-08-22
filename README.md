@@ -26,7 +26,8 @@
 
 ### Frontend
 - **React 18** (Vite)
-- **Tailwind CSS** (Modern UI styling)
+- **Framer Motion** (Page transitions & card micro-animations)
+- **Tailwind CSS** (Modern UI styling & glassmorphism)
 - **React Router DOM v6** (Client-side routing & protected routes)
 - **Axios** (API HTTP requests with JWT interceptor)
 - **Lucide React** (Icons)
@@ -60,7 +61,7 @@ dayflow/
 ├── client/                      # React Frontend (Vite)
 │   ├── src/
 │   │   ├── api/                 # Axios instance & interceptors
-│   │   ├── components/          # Layout, Navbar, Sidebar, StatCard, StatusBadge, Modal
+│   │   ├── components/          # Layout, Navbar, Sidebar, StatCard, StatusBadge, Modal, PageWrapper, SkeletonLoader
 │   │   ├── context/             # AuthContext (state & login/register handlers)
 │   │   ├── pages/               # Login, Register, Dashboards, Attendance, Leaves, Payroll
 │   │   ├── App.jsx              # Main App router & Protected Routes
