@@ -1,7 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import API from '../api/axios';
-import { User, Phone, MapPin, Building2, Briefcase, Lock, CheckCircle2, AlertCircle, Save, Camera, Shield, Mail } from 'lucide-react';
+import PageWrapper from '../components/PageWrapper';
+import { motion } from 'framer-motion';
+import { User, Phone, MapPin, Building2, Briefcase, Lock, CheckCircle2, AlertCircle, Save, Shield, Mail } from 'lucide-react';
 
 const Profile = () => {
   const { user, updateUserState } = useContext(AuthContext);
@@ -35,14 +37,16 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <PageWrapper className="max-w-4xl mx-auto space-y-6">
       <div>
         <h2 className="text-2xl font-black text-slate-900 tracking-tight">My Profile</h2>
         <p className="text-sm text-slate-500 font-medium">Manage your personal profile and contact preferences</p>
       </div>
 
       {message.text && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           className={`p-4 rounded-2xl text-sm flex items-center gap-3 shadow-xs ${
             message.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
@@ -51,12 +55,15 @@ const Profile = () => {
         >
           {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
           <span className="font-semibold">{message.text}</span>
-        </div>
+        </motion.div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Profile Overview Card */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs text-center space-y-4 flex flex-col items-center">
+        <motion.div
+          whileHover={{ y: -2 }}
+          className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs text-center space-y-4 flex flex-col items-center"
+        >
           <div className="relative">
             {profilePicture ? (
               <img
@@ -85,7 +92,7 @@ const Profile = () => {
             </div>
             <div className="flex items-center justify-between text-slate-600">
               <span className="font-semibold text-slate-400">Role Privilege</span>
-              <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${user?.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-sky-100 text-sky-700'}`}>
+              <span className={`px-2 py-0.5 rounded text-[11px] font-extrabold ${user?.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-sky-100 text-sky-700'}`}>
                 {user?.role}
               </span>
             </div>
@@ -94,7 +101,7 @@ const Profile = () => {
               <span className="font-bold text-slate-800 truncate max-w-[140px]">{user?.email}</span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Details & Edit Form */}
         <div className="md:col-span-2 space-y-6">
@@ -157,7 +164,7 @@ const Profile = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+1 (555) 000-0000"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm bg-slate-50/50"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm bg-slate-50/50 font-medium"
                 />
               </div>
             </div>
@@ -173,7 +180,7 @@ const Profile = () => {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="742 Evergreen Terrace, Springfield"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm bg-slate-50/50"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm bg-slate-50/50 font-medium"
                 />
               </div>
             </div>
@@ -187,24 +194,26 @@ const Profile = () => {
                 value={profilePicture}
                 onChange={(e) => setProfilePicture(e.target.value)}
                 placeholder="https://images.unsplash.com/photo-..."
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm bg-slate-50/50"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm bg-slate-50/50 font-medium"
               />
             </div>
 
             <div className="pt-2">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={saving}
                 className="py-3 px-6 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-md transition-all text-sm flex items-center gap-2 disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
                 {saving ? 'Saving Changes...' : 'Save Profile Changes'}
-              </button>
+              </motion.button>
             </div>
           </form>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 

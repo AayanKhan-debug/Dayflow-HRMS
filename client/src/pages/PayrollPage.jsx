@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
+import PageWrapper from '../components/PageWrapper';
+import { TableSkeleton } from '../components/SkeletonLoader';
+import { motion } from 'framer-motion';
 import { CreditCard, DollarSign, ArrowUpRight, ArrowDownRight, Award, FileText, Download } from 'lucide-react';
 
 const PayrollPage = () => {
@@ -26,14 +29,18 @@ const PayrollPage = () => {
   const latestPay = payroll[0];
 
   return (
-    <div className="space-y-6">
+    <PageWrapper className="space-y-6">
       <div>
         <h2 className="text-2xl font-black text-slate-900 tracking-tight">My Payroll & Salary Slips</h2>
         <p className="text-sm text-slate-500 font-medium">Review monthly salary breakdowns, allowances, deductions, and payment records</p>
       </div>
 
       {latestPay && (
-        <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-purple-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-purple-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+        >
           <div className="space-y-1">
             <span className="text-xs font-bold uppercase tracking-wider text-purple-300">
               Latest Issued Statement • {latestPay.month} {latestPay.year}
@@ -41,7 +48,7 @@ const PayrollPage = () => {
             <h3 className="text-3xl font-black text-white">
               ${latestPay.netSalary?.toLocaleString()}
             </h3>
-            <p className="text-xs text-purple-200">
+            <p className="text-xs text-purple-200 font-medium">
               Base: ${latestPay.baseSalary?.toLocaleString()} | Allowances: +${latestPay.allowances?.toLocaleString()} | Deductions: -${latestPay.deductions?.toLocaleString()}
             </p>
           </div>
@@ -49,7 +56,7 @@ const PayrollPage = () => {
           <div className="flex items-center space-x-3 shrink-0">
             <StatusBadge status={latestPay.status} />
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Salary Records Table */}
@@ -58,8 +65,10 @@ const PayrollPage = () => {
           <CreditCard className="w-4 h-4 text-sky-600" /> Salary Statements History
         </div>
 
-        {payroll.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-sm">
+        {loading ? (
+          <TableSkeleton rows={4} />
+        ) : payroll.length === 0 ? (
+          <div className="text-center py-16 text-slate-400 text-sm font-medium">
             No payroll statements generated yet.
           </div>
         ) : (
@@ -81,13 +90,13 @@ const PayrollPage = () => {
                     <td className="px-6 py-4 font-extrabold text-slate-900">
                       {item.month} {item.year}
                     </td>
-                    <td className="px-6 py-4 text-slate-600 font-medium">
+                    <td className="px-6 py-4 text-slate-600 font-semibold">
                       ${item.baseSalary ? item.baseSalary.toLocaleString() : 0}
                     </td>
-                    <td className="px-6 py-4 text-emerald-600 font-semibold">
+                    <td className="px-6 py-4 text-emerald-600 font-bold">
                       +${item.allowances ? item.allowances.toLocaleString() : 0}
                     </td>
-                    <td className="px-6 py-4 text-rose-600 font-semibold">
+                    <td className="px-6 py-4 text-rose-600 font-bold">
                       -${item.deductions ? item.deductions.toLocaleString() : 0}
                     </td>
                     <td className="px-6 py-4 font-black text-slate-900 text-base">
@@ -103,7 +112,7 @@ const PayrollPage = () => {
           </div>
         )}
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 

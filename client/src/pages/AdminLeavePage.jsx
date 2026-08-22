@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import API from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
+import PageWrapper from '../components/PageWrapper';
+import { TableSkeleton } from '../components/SkeletonLoader';
+import { motion } from 'framer-motion';
 import { FileCheck, CheckCircle2, XCircle, MessageSquare, AlertCircle } from 'lucide-react';
 
 const AdminLeavePage = () => {
@@ -66,7 +69,7 @@ const AdminLeavePage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <PageWrapper className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Leave Approvals Portal</h2>
@@ -90,7 +93,9 @@ const AdminLeavePage = () => {
       </div>
 
       {message.text && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           className={`p-4 rounded-2xl text-sm flex items-center gap-3 shadow-xs ${
             message.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
@@ -99,7 +104,7 @@ const AdminLeavePage = () => {
         >
           {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
           <span className="font-semibold">{message.text}</span>
-        </div>
+        </motion.div>
       )}
 
       {/* Leave Requests Table */}
@@ -108,8 +113,10 @@ const AdminLeavePage = () => {
           <FileCheck className="w-4 h-4 text-sky-600" /> Master Leave Applications Queue
         </div>
 
-        {leaves.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-sm">
+        {loading ? (
+          <TableSkeleton rows={4} />
+        ) : leaves.length === 0 ? (
+          <div className="text-center py-16 text-slate-400 text-sm font-medium">
             No leave applications found matching status "{statusFilter}".
           </div>
         ) : (
@@ -137,28 +144,32 @@ const AdminLeavePage = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-800">{item.leaveType}</td>
-                    <td className="px-6 py-4 text-slate-600 text-xs font-medium">
+                    <td className="px-6 py-4 text-slate-600 text-xs font-semibold">
                       {new Date(item.startDate).toLocaleDateString()} to {new Date(item.endDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-slate-600 max-w-xs">{item.reason}</td>
+                    <td className="px-6 py-4 text-slate-600 max-w-xs font-medium">{item.reason}</td>
                     <td className="px-6 py-4">
                       <StatusBadge status={item.status} />
                     </td>
                     <td className="px-6 py-4 text-right">
                       {item.status === 'PENDING' ? (
                         <div className="flex items-center justify-end gap-2">
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => openActionModal(item, 'APPROVE')}
                             className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs transition-all"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5" /> Approve
-                          </button>
-                          <button
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => openActionModal(item, 'REJECT')}
                             className="py-1.5 px-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs transition-all"
                           >
                             <XCircle className="w-3.5 h-3.5" /> Reject
-                          </button>
+                          </motion.button>
                         </div>
                       ) : (
                         <span className="text-xs text-slate-500 font-medium italic">
@@ -198,7 +209,7 @@ const AdminLeavePage = () => {
               value={adminComment}
               onChange={(e) => setAdminComment(e.target.value)}
               placeholder="e.g. Approved. Have a good break!"
-              className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm"
+              className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm font-medium"
             ></textarea>
           </div>
 
@@ -210,7 +221,9 @@ const AdminLeavePage = () => {
             >
               Cancel
             </button>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={submitting}
               className={`py-2.5 px-5 text-white font-bold rounded-2xl text-xs shadow-md disabled:opacity-50 ${
@@ -220,11 +233,11 @@ const AdminLeavePage = () => {
               }`}
             >
               {submitting ? 'Processing...' : `Confirm ${actionType === 'APPROVE' ? 'Approval' : 'Rejection'}`}
-            </button>
+            </motion.button>
           </div>
         </form>
       </Modal>
-    </div>
+    </PageWrapper>
   );
 };
 

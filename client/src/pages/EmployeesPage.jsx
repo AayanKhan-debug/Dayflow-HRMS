@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api/axios';
 import Modal from '../components/Modal';
+import PageWrapper from '../components/PageWrapper';
+import { TableSkeleton } from '../components/SkeletonLoader';
+import { motion } from 'framer-motion';
 import { Users, Search, Edit3, Shield, Mail, Building2, Briefcase, DollarSign, CheckCircle2, AlertCircle, UserCheck } from 'lucide-react';
 
 const EmployeesPage = () => {
@@ -80,7 +83,7 @@ const EmployeesPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <PageWrapper className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Employee Directory</h2>
@@ -89,7 +92,9 @@ const EmployeesPage = () => {
       </div>
 
       {message.text && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           className={`p-4 rounded-2xl text-sm flex items-center gap-3 shadow-xs ${
             message.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
@@ -98,7 +103,7 @@ const EmployeesPage = () => {
         >
           {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
           <span className="font-semibold">{message.text}</span>
-        </div>
+        </motion.div>
       )}
 
       {/* Search & Filter Bar */}
@@ -110,7 +115,7 @@ const EmployeesPage = () => {
             placeholder="Search name, email, designation..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm bg-slate-50/50"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm bg-slate-50/50 font-medium"
           />
         </div>
 
@@ -132,8 +137,10 @@ const EmployeesPage = () => {
 
       {/* Employees Table */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-        {employees.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-sm">
+        {loading ? (
+          <TableSkeleton rows={4} />
+        ) : employees.length === 0 ? (
+          <div className="text-center py-16 text-slate-400 text-sm font-medium">
             No employees found matching current filter criteria.
           </div>
         ) : (
@@ -176,12 +183,14 @@ const EmployeesPage = () => {
                       ${emp.baseSalary ? emp.baseSalary.toLocaleString() : '50,000'}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => openEditModal(emp)}
-                        className="py-1.5 px-3.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 ml-auto transition-all"
+                        className="py-1.5 px-3.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 ml-auto transition-all shadow-2xs"
                       >
                         <Edit3 className="w-3.5 h-3.5" /> Edit Details
-                      </button>
+                      </motion.button>
                     </td>
                   </tr>
                 ))}
@@ -206,7 +215,7 @@ const EmployeesPage = () => {
                 type="text"
                 value={editForm.firstName}
                 onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm font-medium"
               />
             </div>
             <div>
@@ -215,7 +224,7 @@ const EmployeesPage = () => {
                 type="text"
                 value={editForm.lastName}
                 onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm font-medium"
               />
             </div>
           </div>
@@ -238,7 +247,7 @@ const EmployeesPage = () => {
                 type="text"
                 value={editForm.department}
                 onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm font-medium"
               />
             </div>
           </div>
@@ -250,7 +259,7 @@ const EmployeesPage = () => {
                 type="text"
                 value={editForm.designation}
                 onChange={(e) => setEditForm({ ...editForm, designation: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm font-medium"
               />
             </div>
             <div>
@@ -259,7 +268,7 @@ const EmployeesPage = () => {
                 type="number"
                 value={editForm.baseSalary}
                 onChange={(e) => setEditForm({ ...editForm, baseSalary: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm font-medium"
               />
             </div>
           </div>
@@ -272,17 +281,19 @@ const EmployeesPage = () => {
             >
               Cancel
             </button>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={saving}
               className="py-2.5 px-5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white rounded-2xl text-xs font-bold shadow-md disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save Employee Details'}
-            </button>
+            </motion.button>
           </div>
         </form>
       </Modal>
-    </div>
+    </PageWrapper>
   );
 };
 

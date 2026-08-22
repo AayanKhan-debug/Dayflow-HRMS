@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import API from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
+import PageWrapper from '../components/PageWrapper';
+import { TableSkeleton } from '../components/SkeletonLoader';
+import { motion } from 'framer-motion';
 import { CalendarCheck, Plus, CheckCircle2, AlertCircle, MessageSquare, Calendar } from 'lucide-react';
 
 const LeavePage = () => {
@@ -72,23 +75,27 @@ const LeavePage = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <PageWrapper className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Leave Management</h2>
           <p className="text-sm text-slate-500 font-medium">Apply for time off and monitor status updates</p>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setIsModalOpen(true)}
           className="py-3 px-5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-md flex items-center gap-2 transition-all self-start sm:self-auto text-sm"
         >
           <Plus className="w-4 h-4" /> Apply for Leave
-        </button>
+        </motion.button>
       </div>
 
       {message.text && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           className={`p-4 rounded-2xl text-sm flex items-center gap-3 shadow-xs ${
             message.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
@@ -96,8 +103,8 @@ const LeavePage = () => {
           }`}
         >
           {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
-          <span className="font-semibold">{actionMessage.text || message.text}</span>
-        </div>
+          <span className="font-semibold">{message.text}</span>
+        </motion.div>
       )}
 
       {/* Filter Tabs Bar */}
@@ -123,8 +130,10 @@ const LeavePage = () => {
           <CalendarCheck className="w-4 h-4 text-sky-600" /> My Leave Submissions
         </div>
 
-        {filteredLeaves.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-sm">
+        {loading ? (
+          <TableSkeleton rows={4} />
+        ) : filteredLeaves.length === 0 ? (
+          <div className="text-center py-16 text-slate-400 text-sm font-medium">
             No leave requests found for status "{filterTab}".
           </div>
         ) : (
@@ -143,10 +152,10 @@ const LeavePage = () => {
                 {filteredLeaves.map((item) => (
                   <tr key={item._id} className="hover:bg-slate-50/70 transition-colors">
                     <td className="px-6 py-4 font-bold text-slate-900">{item.leaveType}</td>
-                    <td className="px-6 py-4 text-slate-600 text-xs font-medium">
+                    <td className="px-6 py-4 text-slate-600 text-xs font-semibold">
                       {new Date(item.startDate).toLocaleDateString()} to {new Date(item.endDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-slate-600 max-w-xs">{item.reason}</td>
+                    <td className="px-6 py-4 text-slate-600 max-w-xs font-medium">{item.reason}</td>
                     <td className="px-6 py-4">
                       <StatusBadge status={item.status} />
                     </td>
@@ -203,7 +212,7 @@ const LeavePage = () => {
                 required
                 value={formData.startDate}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm font-medium"
               />
             </div>
 
@@ -217,7 +226,7 @@ const LeavePage = () => {
                 required
                 value={formData.endDate}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm font-medium"
               />
             </div>
           </div>
@@ -240,7 +249,7 @@ const LeavePage = () => {
               value={formData.reason}
               onChange={handleChange}
               placeholder="State the reason for your leave application..."
-              className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm"
+              className="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-sky-500 text-sm font-medium"
             ></textarea>
           </div>
 
@@ -252,17 +261,19 @@ const LeavePage = () => {
             >
               Cancel
             </button>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={submitting}
               className="py-2.5 px-5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold rounded-2xl text-xs shadow-md disabled:opacity-50"
             >
               {submitting ? 'Submitting...' : 'Submit Leave Application'}
-            </button>
+            </motion.button>
           </div>
         </form>
       </Modal>
-    </div>
+    </PageWrapper>
   );
 };
 

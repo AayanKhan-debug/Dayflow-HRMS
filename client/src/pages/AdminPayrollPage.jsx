@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import API from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
+import PageWrapper from '../components/PageWrapper';
+import { TableSkeleton } from '../components/SkeletonLoader';
+import { motion } from 'framer-motion';
 import { CreditCard, Plus, CheckCircle2, AlertCircle, Edit3, DollarSign } from 'lucide-react';
 
 const AdminPayrollPage = () => {
@@ -125,23 +128,27 @@ const AdminPayrollPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <PageWrapper className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Payroll Operations</h2>
           <p className="text-sm text-slate-500 font-medium">Generate salary statements, adjust allowances & deductions, and disburse pay</p>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setIsGenerateOpen(true)}
           className="py-3 px-5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-md flex items-center gap-2 transition-all self-start sm:self-auto text-sm"
         >
           <Plus className="w-4 h-4" /> Issue New Payroll
-        </button>
+        </motion.button>
       </div>
 
       {message.text && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           className={`p-4 rounded-2xl text-sm flex items-center gap-3 shadow-xs ${
             message.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
@@ -150,7 +157,7 @@ const AdminPayrollPage = () => {
         >
           {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
           <span className="font-semibold">{message.text}</span>
-        </div>
+        </motion.div>
       )}
 
       {/* Payroll Master Table */}
@@ -159,8 +166,10 @@ const AdminPayrollPage = () => {
           <CreditCard className="w-4 h-4 text-sky-600" /> Company Payroll Records
         </div>
 
-        {payrolls.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-sm">
+        {loading ? (
+          <TableSkeleton rows={4} />
+        ) : payrolls.length === 0 ? (
+          <div className="text-center py-16 text-slate-400 text-sm font-medium">
             No payroll statements generated yet. Click "Issue New Payroll" to generate one.
           </div>
         ) : (
@@ -190,7 +199,7 @@ const AdminPayrollPage = () => {
                     <td className="px-6 py-4 font-bold text-slate-800">
                       {item.month} {item.year}
                     </td>
-                    <td className="px-6 py-4 text-slate-600 font-medium">
+                    <td className="px-6 py-4 text-slate-600 font-semibold">
                       ${item.baseSalary ? item.baseSalary.toLocaleString() : 0}
                     </td>
                     <td className="px-6 py-4 text-emerald-600 font-bold">
@@ -207,19 +216,23 @@ const AdminPayrollPage = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => openEditModal(item)}
-                          className="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all"
+                          className="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-2xs"
                         >
                           Edit
-                        </button>
+                        </motion.button>
                         {item.status === 'PENDING' && (
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => handleMarkPaid(item._id)}
                             className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1 transition-all"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5" /> Mark Paid
-                          </button>
+                          </motion.button>
                         )}
                       </div>
                     </td>
@@ -275,7 +288,7 @@ const AdminPayrollPage = () => {
                 type="number"
                 value={generateForm.year}
                 onChange={(e) => setGenerateForm({ ...generateForm, year: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm font-medium"
               />
             </div>
           </div>
@@ -325,13 +338,15 @@ const AdminPayrollPage = () => {
             >
               Cancel
             </button>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={submitting}
               className="py-2.5 px-5 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold rounded-2xl text-xs shadow-md disabled:opacity-50"
             >
               {submitting ? 'Generating...' : 'Issue Statement'}
-            </button>
+            </motion.button>
           </div>
         </form>
       </Modal>
@@ -389,17 +404,19 @@ const AdminPayrollPage = () => {
             >
               Cancel
             </button>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={submitting}
               className="py-2.5 px-5 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold rounded-2xl text-xs shadow-md disabled:opacity-50"
             >
               {submitting ? 'Updating...' : 'Save Changes'}
-            </button>
+            </motion.button>
           </div>
         </form>
       </Modal>
-    </div>
+    </PageWrapper>
   );
 };
 

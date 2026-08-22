@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
+import PageWrapper from '../components/PageWrapper';
+import { TableSkeleton } from '../components/SkeletonLoader';
 import { Clock, Filter, Calendar, User, RefreshCw } from 'lucide-react';
 
 const AdminAttendancePage = () => {
@@ -42,7 +44,7 @@ const AdminAttendancePage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <PageWrapper className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">Company Attendance Logs</h2>
@@ -96,8 +98,10 @@ const AdminAttendancePage = () => {
           <Clock className="w-4 h-4 text-sky-600" /> Master Attendance Register
         </div>
 
-        {attendance.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-sm">
+        {loading ? (
+          <TableSkeleton rows={4} />
+        ) : attendance.length === 0 ? (
+          <div className="text-center py-16 text-slate-400 text-sm font-medium">
             No attendance records found matching selected filter options.
           </div>
         ) : (
@@ -121,23 +125,23 @@ const AdminAttendancePage = () => {
                       <div className="font-extrabold text-slate-900">
                         {item.user ? `${item.user.firstName} ${item.user.lastName}` : 'Unknown User'}
                       </div>
-                      <div className="text-xs text-slate-500">{item.user?.designation}</div>
+                      <div className="text-xs text-slate-500 font-medium">{item.user?.designation}</div>
                     </td>
-                    <td className="px-6 py-4 text-slate-700 font-medium">
+                    <td className="px-6 py-4 text-slate-700 font-semibold">
                       {item.user?.department || 'N/A'}
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-800">{item.date}</td>
-                    <td className="px-6 py-4 text-slate-600 text-xs font-medium">
+                    <td className="px-6 py-4 text-slate-600 text-xs font-semibold">
                       {item.checkIn
                         ? new Date(item.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                         : '--'}
                     </td>
-                    <td className="px-6 py-4 text-slate-600 text-xs font-medium">
+                    <td className="px-6 py-4 text-slate-600 text-xs font-semibold">
                       {item.checkOut
                         ? new Date(item.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                         : '--'}
                     </td>
-                    <td className="px-6 py-4 font-bold text-slate-900">
+                    <td className="px-6 py-4 font-black text-slate-900">
                       {item.workedHours ? `${item.workedHours} hrs` : '--'}
                     </td>
                     <td className="px-6 py-4">
@@ -150,7 +154,7 @@ const AdminAttendancePage = () => {
           </div>
         )}
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 

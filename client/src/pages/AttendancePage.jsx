@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import API from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
+import PageWrapper from '../components/PageWrapper';
+import { TableSkeleton } from '../components/SkeletonLoader';
+import { motion } from 'framer-motion';
 import { Clock, CheckCircle2, LogOut as LogOutIcon, AlertCircle, Calendar, Timer } from 'lucide-react';
 
 const AttendancePage = () => {
@@ -59,7 +62,7 @@ const AttendancePage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <PageWrapper className="space-y-6">
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -67,17 +70,19 @@ const AttendancePage = () => {
           <p className="text-sm text-slate-500 font-medium">Track your daily check-in, check-out times and accumulated hours</p>
         </div>
 
-        <div className="flex items-center space-x-3 bg-white px-4 py-2 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div className="flex items-center space-x-3 bg-white px-4 py-2.5 rounded-2xl border border-slate-200/80 shadow-xs">
           <Timer className="w-5 h-5 text-sky-600" />
           <div className="text-xs">
             <span className="text-slate-400 font-bold block uppercase text-[10px]">Total Logged Hours</span>
-            <span className="font-extrabold text-slate-900 text-sm">{totalWorkedHours.toFixed(1)} hrs</span>
+            <span className="font-black text-slate-900 text-sm">{totalWorkedHours.toFixed(1)} hrs</span>
           </div>
         </div>
       </div>
 
       {actionMessage.text && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           className={`p-4 rounded-2xl text-sm flex items-center gap-3 shadow-xs ${
             actionMessage.type === 'success'
               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
@@ -86,7 +91,7 @@ const AttendancePage = () => {
         >
           {actionMessage.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
           <span className="font-semibold">{actionMessage.text}</span>
-        </div>
+        </motion.div>
       )}
 
       {/* Interactive Clock Action Widget */}
@@ -99,7 +104,7 @@ const AttendancePage = () => {
             <h3 className="text-xl font-black text-white">
               Status: {todayRecord ? todayRecord.status : 'Not Clocked In'}
             </h3>
-            <p className="text-slate-300 text-xs">
+            <p className="text-slate-300 text-xs font-medium">
               {todayRecord?.checkIn
                 ? `Clocked In at ${new Date(todayRecord.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
                 : 'Please check in when you begin work.'}
@@ -107,20 +112,24 @@ const AttendancePage = () => {
           </div>
 
           <div className="flex items-center space-x-3 shrink-0">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={handleCheckIn}
               disabled={!!todayRecord || actionLoading}
-              className="py-3 px-5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-800 text-white disabled:text-slate-500 font-bold rounded-2xl text-xs shadow-md flex items-center gap-2 transition-all"
+              className="py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-800 text-white disabled:text-slate-500 font-bold rounded-2xl text-xs shadow-md flex items-center gap-2 transition-all"
             >
               <CheckCircle2 className="w-4 h-4" /> Check In
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={handleCheckOut}
               disabled={!todayRecord || !!todayRecord.checkOut || actionLoading}
-              className="py-3 px-5 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-800 text-white disabled:text-slate-500 font-bold rounded-2xl text-xs shadow-md flex items-center gap-2 transition-all"
+              className="py-3.5 px-5 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-800 text-white disabled:text-slate-500 font-bold rounded-2xl text-xs shadow-md flex items-center gap-2 transition-all"
             >
               <LogOutIcon className="w-4 h-4" /> Check Out
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
@@ -131,8 +140,10 @@ const AttendancePage = () => {
           <Clock className="w-4 h-4 text-sky-600" /> Historical Attendance Records
         </div>
 
-        {attendance.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-sm">
+        {loading ? (
+          <TableSkeleton rows={4} />
+        ) : attendance.length === 0 ? (
+          <div className="text-center py-16 text-slate-400 text-sm font-medium">
             No attendance records found yet. Use the Check In button above!
           </div>
         ) : (
@@ -151,12 +162,12 @@ const AttendancePage = () => {
                 {attendance.map((item) => (
                   <tr key={item._id} className="hover:bg-slate-50/70 transition-colors">
                     <td className="px-6 py-4 font-bold text-slate-900">{item.date}</td>
-                    <td className="px-6 py-4 text-slate-600 text-xs font-medium">
+                    <td className="px-6 py-4 text-slate-600 text-xs font-semibold">
                       {item.checkIn
                         ? new Date(item.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
                         : '--'}
                     </td>
-                    <td className="px-6 py-4 text-slate-600 text-xs font-medium">
+                    <td className="px-6 py-4 text-slate-600 text-xs font-semibold">
                       {item.checkOut
                         ? new Date(item.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
                         : '--'}
@@ -174,7 +185,7 @@ const AttendancePage = () => {
           </div>
         )}
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 
