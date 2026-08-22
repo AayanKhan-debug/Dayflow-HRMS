@@ -1,24 +1,26 @@
 # ☀️ Dayflow – Human Resource Management System (MERN Stack)
 
-**Dayflow** is a complete, modern, production-ready MERN stack web application built to streamline Human Resource operations including Employee Directory management, Check-in/Check-out Attendance tracking, Leave Request approvals, and Payroll processing with strict Role-Based Access Control (`EMPLOYEE` & `ADMIN`).
+**Dayflow** is a complete, modern, production-ready MERN stack web application built to streamline Human Resource operations including Employee Directory management, Check-in/Check-out Attendance tracking, Leave Request approvals, Payroll processing, interactive Recharts analytics, and Notification alerts with strict Role-Based Access Control (`EMPLOYEE` & `ADMIN`).
 
 ---
 
-## 🌟 Key Features
-
-### 👤 Employee Portal
-- **Dashboard**: Personalized welcome banner, real-time Check-In / Check-Out controls, worked hours tracker, today's status, pending leave counters, and recent activity.
-- **My Profile**: View employment details (role, department, designation, salary) and update contact information (phone number, address, profile picture).
-- **Attendance History**: Log daily attendance and review worked hours logs.
-- **Leave Management**: Apply for leaves (`CASUAL`, `SICK`, `UNPAID`), track request status (`PENDING`, `APPROVED`, `REJECTED`), and view admin feedback comments.
-- **Payroll**: Review monthly salary breakdown (`baseSalary + allowances - deductions`) and payment statuses (`PENDING` / `PAID`).
+## 🌟 Features
 
 ### 👑 Admin Portal
-- **Metrics Dashboard**: Company-wide statistics showing Total Employees, Present Today, Absent Today, and Pending Leave Requests.
-- **Employee Directory**: Search employees by name, email, or designation; view detailed profiles; update roles, departments, designations, and base salaries.
-- **Master Attendance**: View company-wide check-in logs with filters by date or specific employee.
-- **Leave Approval Portal**: Review employee leave applications, approve or reject with custom feedback comments.
-- **Payroll Management**: Generate monthly payroll statements, adjust allowances & deductions, and mark salary status as `PAID`.
+- **Executive Analytics Dashboard**: Interactive Recharts charts including **Attendance Overview (Bar Chart)**, **Leave Analytics (Donut Chart)**, **Department Distribution (Bar Chart)**, and **Payroll Spend Overview (Line Chart)**.
+- **Employee Directory**: Search workforce by name, email, or designation; edit employee details, roles (`EMPLOYEE` / `ADMIN`), departments, designations, and base salaries.
+- **Master Attendance Register**: Monitor company-wide check-in/out logs with date and employee filters.
+- **Leave Approvals Portal**: Filter requests by status (`PENDING`, `APPROVED`, `REJECTED`), approve or reject leave applications with custom admin feedback comments.
+- **Payroll Operations**: Issue monthly payroll statements, adjust allowances & deductions with auto-calculated net salary, and mark statement status as `PAID`.
+- **Notification Center**: Interactive popover dropdown alerting admins to new leave submissions, attendance activity, and generated payroll statements.
+
+### 👤 Employee Portal
+- **Personalized Workspace Dashboard**: Dynamic time-of-day greeting ("Good Morning / Afternoon / Evening"), daily worked hours trend chart, leave status summary, quick action launcher grid, and latest salary slips snippet.
+- **Live Attendance Widget**: 1-click Check In & Check Out with real-time status ring and worked hours calculation.
+- **My Profile**: View system-managed employment details and edit contact preferences (phone number, address, profile picture URL).
+- **Leave Application Workflow**: Apply for leaves (`CASUAL`, `SICK`, `UNPAID`), auto-calculate leave duration in days, track request status, and view admin feedback comments.
+- **Payroll & Payslips**: Review monthly salary breakdown (`baseSalary + allowances - deductions`) and payment statuses (`PENDING` / `PAID`).
+- **Notification Center**: Real-time alerts for approved/rejected leave applications and issued payslips with direct navigation.
 
 ---
 
@@ -26,30 +28,19 @@
 
 ### Frontend
 - **React 18** (Vite)
-- **Framer Motion** (Page transitions & card micro-animations)
-- **Tailwind CSS** (Modern UI styling & glassmorphism)
-- **React Router DOM v6** (Client-side routing & protected routes)
-- **Axios** (API HTTP requests with JWT interceptor)
+- **Framer Motion** (Page transitions, modal popups, and staggered card entrance micro-animations)
+- **Recharts** (Interactive data visualization charts)
+- **Tailwind CSS** (Modern SaaS UI styling, glassmorphism, responsive grid)
+- **React Router DOM v6** (Client-side routing & protected role-based routes)
+- **Axios** (HTTP API client with JWT bearer header interceptor)
 - **Lucide React** (Icons)
 
 ### Backend
-- **Node.js** & **Express.js** (REST API)
-- **MongoDB** & **Mongoose** (Data modeling & schemas)
-- **JWT (JSON Web Tokens)** (Authentication & route protection)
-- **bcryptjs** (Password hashing & security)
+- **Node.js** & **Express.js** (RESTful API architecture)
+- **MongoDB** & **Mongoose** (Data schemas & relationships)
+- **JWT (JSON Web Tokens)** (Authentication & route protection middleware)
+- **bcryptjs** (Secure password hashing)
 - **MongoDB Memory Server** (Automatic zero-config fallback for seamless demo execution)
-
----
-
-## 🔑 Demo Login Credentials
-
-For quick evaluation, use the pre-seeded credentials or click the **1-Click Demo Buttons** on the Login screen:
-
-| Role | Email | Password | Access Level |
-| :--- | :--- | :--- | :--- |
-| **ADMIN** | `admin@dayflow.com` | `admin123` | Master Control Panel & Management Features |
-| **EMPLOYEE** | `employee@dayflow.com` | `emp123` | Employee Workspace (John Doe - Sr. Dev) |
-| **EMPLOYEE (Secondary)** | `sarah@dayflow.com` | `emp123` | Employee Workspace (Sarah Connor - UX Lead) |
 
 ---
 
@@ -57,29 +48,29 @@ For quick evaluation, use the pre-seeded credentials or click the **1-Click Demo
 
 ```text
 dayflow/
-│
 ├── client/                      # React Frontend (Vite)
 │   ├── src/
-│   │   ├── api/                 # Axios instance & interceptors
-│   │   ├── components/          # Layout, Navbar, Sidebar, StatCard, StatusBadge, Modal, PageWrapper, SkeletonLoader
-│   │   ├── context/             # AuthContext (state & login/register handlers)
-│   │   ├── pages/               # Login, Register, Dashboards, Attendance, Leaves, Payroll
+│   │   ├── api/                 # Axios instance & JWT interceptor
+│   │   ├── components/          # Navbar, Sidebar, StatCard, StatusBadge, Modal, PageWrapper, SkeletonLoader
+│   │   ├── context/             # AuthContext (user state, login/register, logout)
+│   │   ├── pages/               # Login, Register, Dashboards, Attendance, Leaves, Payroll, Employees
 │   │   ├── App.jsx              # Main App router & Protected Routes
 │   │   ├── main.jsx             # Entry point
-│   │   └── index.css            # Tailwind CSS imports
+│   │   └── index.css            # Tailwind CSS imports & custom utility classes
 │   ├── package.json
 │   ├── vite.config.js
-│   └── tailwind.config.js
+│   └── .env.example
 │
 ├── server/                      # Express REST API Backend
-│   ├── config/                  # Database connection with fallback
+│   ├── config/                  # Database connection with memory server fallback
 │   ├── controllers/             # Auth, Employee, Attendance, Leave, Payroll controllers
 │   ├── middleware/              # Auth JWT verification & error handler
 │   ├── models/                  # User, Attendance, LeaveRequest, Payroll Mongoose schemas
-│   ├── routes/                  # API routes definition
+│   ├── routes/                  # REST API endpoint definitions
 │   ├── utils/                   # Database seeder script
 │   ├── server.js                # Server entry point
-│   ├── .env                     # Configuration file
+│   ├── .env                     # Server environment variables
+│   ├── .env.example
 │   └── package.json
 │
 └── README.md
@@ -87,63 +78,69 @@ dayflow/
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started & Local Setup
 
 ### Prerequisites
 - Node.js (v18+)
 - npm or yarn
 
-### 1. Backend Setup
+### 1. Clone Repository & Backend Setup
 
 ```bash
-cd server
+# Clone the repository
+git clone https://github.com/AayanKhan-debug/Dayflow-HRMS.git
+cd Dayflow-HRMS/server
+
+# Install backend dependencies
 npm install
-npm run seed      # (Optional) Pre-populates demo accounts and sample records
-npm start         # Runs backend API on http://localhost:5000
+
+# Run database seeder (Optional - populates demo accounts & historical data)
+npm run seed
+
+# Start Express REST API server (Runs on http://localhost:5000)
+npm start
 ```
 
 ### 2. Frontend Setup
 
 ```bash
-cd client
+# Open a new terminal window
+cd Dayflow-HRMS/client
+
+# Install frontend dependencies
 npm install
-npm run dev       # Runs Vite development server on http://localhost:5173
+
+# Start Vite development server (Runs on http://localhost:5173)
+npm run dev
 ```
 
 ---
 
-## 📡 REST API Summary
+## 🔑 Demo Credentials
 
-### Authentication
-- `POST /api/auth/register` — Create new account
-- `POST /api/auth/login` — User login
-- `GET  /api/auth/me` — Get logged-in user profile
+Use these credentials or click the **1-Click Demo Buttons** on the Login screen:
 
-### Employee Management
-- `GET  /api/employees/me` — Get profile details
-- `PUT  /api/employees/me` — Update phone, address, profile picture
-- `GET  /api/admin/employees` — Get all employees (Admin)
-- `PUT  /api/admin/employees/:id` — Update employee role/department/salary (Admin)
+| Role | Email | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **👑 ADMIN** | `admin@dayflow.com` | `admin123` | Executive Control Panel & Approvals |
+| **👤 EMPLOYEE** | `employee@dayflow.com` | `emp123` | Employee Workspace (John Doe - Sr. Dev) |
+| **👤 EMPLOYEE (Secondary)** | `sarah@dayflow.com` | `emp123` | Employee Workspace (Sarah Connor - UX Lead) |
 
-### Attendance
-- `POST /api/attendance/check-in` — Clock in for the day
-- `POST /api/attendance/check-out` - Clock out & calculate worked hours
-- `GET  /api/attendance/my` — Get user's attendance log
-- `GET  /api/attendance` — View all company attendance logs (Admin)
+---
 
-### Leave Requests
-- `POST /api/leaves` — Submit leave request
-- `GET  /api/leaves/my` — View user's leave requests
-- `GET  /api/leaves` — Master leave request queue (Admin)
-- `PUT  /api/leaves/:id/approve` — Approve leave (Admin)
-- `PUT  /api/leaves/:id/reject` — Reject leave (Admin)
+## 🔐 Environment Variables
 
-### Payroll
-- `GET  /api/payroll/my` — View user's salary statements
-- `GET  /api/payroll` — Master payroll records (Admin)
-- `POST /api/payroll` — Generate new payroll statement (Admin)
-- `PUT  /api/payroll/:id` — Edit allowances/deductions (Admin)
-- `PUT  /api/payroll/:id/pay` — Mark payroll as PAID (Admin)
+### Server (`server/.env`)
+```env
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/dayflow
+JWT_SECRET=your_jwt_secret_key_here
+```
+
+### Client (`client/.env`)
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
 
 ---
 
