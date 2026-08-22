@@ -17,7 +17,7 @@ const seedData = async () => {
     await LeaveRequest.deleteMany({});
     await Payroll.deleteMany({});
 
-    console.log('[Seed] Inserting initial users...');
+    console.log('[Seed] Inserting initial users across multiple departments...');
 
     const admin = await User.create({
       firstName: 'Alex',
@@ -58,43 +58,110 @@ const seedData = async () => {
       baseSalary: 78000
     });
 
-    console.log('[Seed] Users created:');
-    console.log(` - ADMIN: admin@dayflow.com / admin123`);
-    console.log(` - EMPLOYEE: employee@dayflow.com / emp123`);
-    console.log(` - EMPLOYEE: sarah@dayflow.com / emp123`);
+    const emp3 = await User.create({
+      firstName: 'Michael',
+      lastName: 'Scott',
+      email: 'michael@dayflow.com',
+      password: 'emp123',
+      role: 'EMPLOYEE',
+      department: 'Sales',
+      designation: 'Regional Sales Lead',
+      phone: '+1 (555) 456-7890',
+      address: '1725 Slough Avenue, Scranton, PA',
+      baseSalary: 92000
+    });
 
-    // Create sample attendance
-    const today = new Date();
-    const dStr = (d) => d.toISOString().split('T')[0];
+    const emp4 = await User.create({
+      firstName: 'Emily',
+      lastName: 'Watson',
+      email: 'emily@dayflow.com',
+      password: 'emp123',
+      role: 'EMPLOYEE',
+      department: 'Engineering',
+      designation: 'DevOps Engineer',
+      phone: '+1 (555) 321-6549',
+      address: '12 Market St, San Francisco, CA',
+      baseSalary: 95000
+    });
 
+    console.log('[Seed] Users created successfully.');
+
+    // Seed Attendance records across past dates
+    const dStr = (offsetDays) => {
+      const d = new Date(Date.now() - 86400000 * offsetDays);
+      return d.toISOString().split('T')[0];
+    };
+
+    console.log('[Seed] Creating attendance history...');
     await Attendance.create([
       {
         user: emp1._id,
-        date: dStr(new Date(Date.now() - 86400000 * 2)),
-        checkIn: new Date(Date.now() - 86400000 * 2 + 32400000), // 9 AM
-        checkOut: new Date(Date.now() - 86400000 * 2 + 64800000), // 6 PM
+        date: dStr(4),
+        checkIn: new Date(Date.now() - 86400000 * 4 + 32400000), // 9:00 AM
+        checkOut: new Date(Date.now() - 86400000 * 4 + 64800000), // 6:00 PM
         workedHours: 9.0,
         status: 'PRESENT'
       },
       {
         user: emp1._id,
-        date: dStr(new Date(Date.now() - 86400000 * 1)),
-        checkIn: new Date(Date.now() - 86400000 * 1 + 34200000), // 9:30 AM
-        checkOut: new Date(Date.now() - 86400000 * 1 + 63000000), // 5:30 PM
+        date: dStr(3),
+        checkIn: new Date(Date.now() - 86400000 * 3 + 33300000), // 9:15 AM
+        checkOut: new Date(Date.now() - 86400000 * 3 + 63900000), // 5:45 PM
+        workedHours: 8.5,
+        status: 'PRESENT'
+      },
+      {
+        user: emp1._id,
+        date: dStr(2),
+        checkIn: new Date(Date.now() - 86400000 * 2 + 34200000), // 9:30 AM
+        checkOut: new Date(Date.now() - 86400000 * 2 + 63000000), // 5:30 PM
         workedHours: 8.0,
         status: 'PRESENT'
       },
       {
+        user: emp1._id,
+        date: dStr(1),
+        checkIn: new Date(Date.now() - 86400000 * 1 + 32400000),
+        checkOut: new Date(Date.now() - 86400000 * 1 + 64800000),
+        workedHours: 9.0,
+        status: 'PRESENT'
+      },
+      {
         user: emp2._id,
-        date: dStr(new Date(Date.now() - 86400000 * 1)),
-        checkIn: new Date(Date.now() - 86400000 * 1 + 36000000),
+        date: dStr(2),
+        checkIn: new Date(Date.now() - 86400000 * 2 + 36000000),
+        checkOut: new Date(Date.now() - 86400000 * 2 + 54000000),
+        workedHours: 5.0,
+        status: 'HALF_DAY'
+      },
+      {
+        user: emp2._id,
+        date: dStr(1),
+        checkIn: new Date(Date.now() - 86400000 * 1 + 32400000),
         checkOut: new Date(Date.now() - 86400000 * 1 + 61200000),
-        workedHours: 7.0,
+        workedHours: 8.0,
+        status: 'PRESENT'
+      },
+      {
+        user: emp3._id,
+        date: dStr(1),
+        checkIn: new Date(Date.now() - 86400000 * 1 + 34200000),
+        checkOut: new Date(Date.now() - 86400000 * 1 + 63000000),
+        workedHours: 8.0,
+        status: 'PRESENT'
+      },
+      {
+        user: emp4._id,
+        date: dStr(1),
+        checkIn: new Date(Date.now() - 86400000 * 1 + 32400000),
+        checkOut: new Date(Date.now() - 86400000 * 1 + 64800000),
+        workedHours: 9.0,
         status: 'PRESENT'
       }
     ]);
 
-    // Create sample leave requests
+    // Seed Leave requests across PENDING, APPROVED, REJECTED
+    console.log('[Seed] Creating leave requests...');
     await LeaveRequest.create([
       {
         user: emp1._id,
@@ -112,11 +179,49 @@ const seedData = async () => {
         reason: 'Viral fever rest',
         status: 'APPROVED',
         adminComment: 'Approved. Get well soon!'
+      },
+      {
+        user: emp3._id,
+        leaveType: 'UNPAID',
+        startDate: new Date(Date.now() - 86400000 * 20),
+        endDate: new Date(Date.now() - 86400000 * 18),
+        reason: 'Personal vacation trip',
+        status: 'REJECTED',
+        adminComment: 'High workload during product launch week.'
+      },
+      {
+        user: emp4._id,
+        leaveType: 'CASUAL',
+        startDate: new Date(Date.now() + 86400000 * 7),
+        endDate: new Date(Date.now() + 86400000 * 8),
+        reason: 'Medical checkup',
+        status: 'PENDING'
       }
     ]);
 
-    // Create sample payrolls
+    // Seed Payroll records across June, July, August
+    console.log('[Seed] Creating payroll records...');
     await Payroll.create([
+      {
+        user: emp1._id,
+        month: 'June',
+        year: 2026,
+        baseSalary: 85000,
+        allowances: 2500,
+        deductions: 1200,
+        netSalary: 86300,
+        status: 'PAID'
+      },
+      {
+        user: emp1._id,
+        month: 'July',
+        year: 2026,
+        baseSalary: 85000,
+        allowances: 3000,
+        deductions: 1500,
+        netSalary: 86500,
+        status: 'PAID'
+      },
       {
         user: emp1._id,
         month: 'August',
@@ -129,6 +234,16 @@ const seedData = async () => {
       },
       {
         user: emp2._id,
+        month: 'July',
+        year: 2026,
+        baseSalary: 78000,
+        allowances: 2000,
+        deductions: 1000,
+        netSalary: 79000,
+        status: 'PAID'
+      },
+      {
+        user: emp2._id,
         month: 'August',
         year: 2026,
         baseSalary: 78000,
@@ -136,6 +251,16 @@ const seedData = async () => {
         deductions: 1000,
         netSalary: 79500,
         status: 'PAID'
+      },
+      {
+        user: emp3._id,
+        month: 'August',
+        year: 2026,
+        baseSalary: 92000,
+        allowances: 4000,
+        deductions: 2000,
+        netSalary: 94000,
+        status: 'PENDING'
       }
     ]);
 

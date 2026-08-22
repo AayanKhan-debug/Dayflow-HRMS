@@ -20,8 +20,22 @@ import {
   ArrowRight,
   User,
   Zap,
-  Sparkles
+  Sparkles,
+  PieChart as PieChartIcon,
+  BarChart3
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  CartesianGrid
+} from 'recharts';
 
 const EmployeeDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -94,7 +108,24 @@ const EmployeeDashboard = () => {
 
   const pendingLeaves = leaves.filter((l) => l.status === 'PENDING').length;
   const approvedLeaves = leaves.filter((l) => l.status === 'APPROVED').length;
+  const rejectedLeaves = leaves.filter((l) => l.status === 'REJECTED').length;
   const latestPayroll = payroll[0];
+
+  // A. Personal Attendance Trend Data
+  const attendanceTrendData = attendance
+    .slice(0, 7)
+    .reverse()
+    .map((a) => ({
+      date: a.date ? a.date.slice(5) : 'Date',
+      hours: a.workedHours || 8.0
+    }));
+
+  // B. Employee Leave Summary Data
+  const leavePieData = [
+    { name: 'Pending', value: pendingLeaves || 0, color: '#f59e0b' },
+    { name: 'Approved', value: approvedLeaves || 0, color: '#10b981' },
+    { name: 'Rejected', value: rejectedLeaves || 0, color: '#ef4444' }
+  ];
 
   return (
     <PageWrapper className="space-y-8">
@@ -194,6 +225,91 @@ const EmployeeDashboard = () => {
           />
         </div>
       )}
+
+      {/* ==================================================
+          EMPLOYEE DASHBOARD RECHARTS ANALYTICS GRID (2 CHARTS)
+         ================================================== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* A. Personal Attendance Trend Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-sky-600" />
+                Personal Worked Hours Trend
+              </h3>
+              <p className="text-xs text-slate-500 font-semibold">Hours logged across recent workdays</p>
+            </div>
+            <span className="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100">
+              Work Logs
+            </span>
+          </div>
+
+          <div className="h-60 w-full pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={attendanceTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="date" tick={{ fontSize: 12, fontWeight: 600, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '16px', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold' }}
+                  formatter={(value) => [`${value} hrs`, 'Worked Hours']}
+                />
+                <Bar dataKey="hours" fill="#0284c7" radius={[8, 8, 0, 0]} barSize={36} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+
+        {/* B. Employee Leave Summary Chart (Donut) */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <PieChartIcon className="w-5 h-5 text-amber-500" />
+                My Leave Application Summary
+              </h3>
+              <p className="text-xs text-slate-500 font-semibold">Breakdown of submitted applications</p>
+            </div>
+            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100">
+              Applications
+            </span>
+          </div>
+
+          <div className="h-60 w-full flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={leavePieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {leavePieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '16px', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+      </div>
 
       {/* Quick Action Grid */}
       <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs">
